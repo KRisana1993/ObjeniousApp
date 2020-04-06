@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Go Project</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.1.2/papaparse.min.js"></script>
+		<script type="text/javascript">
+			let token = null;
+			let deviceList = null;
+			let csvFile = null;
+			$(document).ready(function() {
+				$("#callGo").on('click', function() {
+					$("#tenantList").removeClass("hidden");
+					loginInfo = {
+						"login": "rkamalakaran.ext@objenious.com",
+						"password": "Michael1508"
+					}
+					$.ajax({
+						url: "https://api-preprod.objenious.com/v2/login",
+						contentType: 'application/json',
+                        method: "POST",
+						data: JSON.stringify(loginInfo),
+						success: function(data) {
+							token = data.token;
+							$.ajax({
+								url: "http://api-preprod.objenious.com/v2/user/profile",
+								method: "GET",
+								headers: {
+									"x-token": data.token
+								},
+								success: function(tenantList) {
+
+									tenantList.contexts.forEach(element => {
+										$("#tenantList")
+											.append($("<option></option>")
+                							.attr("value",element.id)
+                							.text(element.organization_label));
+									});
+								},
+							})
+						},
+					});
+				});
+			});
+			function tenantListSelect (index, choosenTenant) {
+				var paragraph = document.getElementById("choosenTenant");
+				var text = document.createTextNode(choosenTenant);
+				paragraph.appendChild(text);
+
+				$.ajax({
+					url: "https://api-preprod.objenious.com/v2/user/profile/chooseContext/" + index,
+					method: "POST",
+					headers: {
+						"x-token": token
+					},
+					success: function(tenant) {
+						$.ajax({
+							url: "https://api-preprod.objenious.com/v2/devices",
+							method: "GET",
+							headers: {
+								"x-token": token
+							},
+							success: function (tenantDevices) {
+								deviceList = tenantDevices;
+								console.log("Tenant Device", deviceList);
+								var table = $('#tenantDevice');
+								table.find("thead tr")[0].style.visibility = "visible";
+								table.find("tbody tr").remove();
+								tenantDevices.forEach(function (elt) {
+									table.append("<tr><td>" + elt.id + "</td><td>" + elt.name + "</td></tr>");
+								});
+							}
+						})
+					},
+				})
+			}
+			function handleFileSelect(evt) {
+				var file = evt.target.files[0];
+				Papa.parse(file, {
+					header: true,
+					dynamicTyping: true,
+					complete: function(results) {
+						data = results;
+						csvFile = data.data;
+						changeNameWithCSV();
+						var table = $('#CSVfileContent');
+								table.find("thead tr")[0].style.visibility = "visible";
+								table.find("tbody tr").remove();
+								csvFile.forEach(function (elt) {
+									table.append("<tr><td>" + elt.id + "</td><td>" + elt.name + "</td></tr>");
+								});
+					}
+				});
+		    }
+			$(document).ready(function(){
+				$("#csv-file").change(handleFileSelect);
+			});
+			function changeNameWithCSV() {
+				deviceList.forEach(function(elt) {
+					csvFile.forEach(function(elt2) {
+						if(elt.id === elt2.id) {
+							$('#existElt').append("L'ID suivant existe dans les deux listes : " + elt.id + "</br>");
+							var sendingElt = {
+								"label": elt2.name
+							}
+							console.log('sending element : ', sendingElt);
+							$.ajax({
+							url: "https://api-preprod.objenious.com/v2/devices/" + elt.id,
+							method: "PUT",
+							headers: {
+								"x-token": token
+							},
+							data: sendingElt,
+							success: function (response) {
+								console.log("Reponse : ", response);
+							}
+						})
+						}
+					})
+				})
+			}
+		</script>
+	</head>
+	<style>
+	/* Style the header with a grey background and some padding */
+		.header {
+		overflow: hidden;
+		background-color: #5d9cec;
+		padding: 20px 10px;
+		margin: -8px;
+		height: 20px;
+		}
+		.sidenav {
+		height: 100%;
+		width: 160px;
+		position: fixed;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		background-color: #1c254d;
+		overflow-x: hidden;
+		padding-top: 20px;
+		}
+
+		.sidenav a {
+		font-family: Montserrat-Bold;
+		padding: 6px 8px 6px 16px;
+		text-decoration: none;
+		font-size: 15px;
+		color: white;
+		display: block;
+		}
+
+		.sidenav a:hover {
+		color: #f1f1f1;
+		}
+
+		.main {
+		margin-left: 160px; /* Same as the width of the sidenav */
+		font-size: 28px; /* Increased text to enable scrolling */
+		padding: 0px 10px;
+		}
+
+		@media screen and (max-height: 450px) {
+		.sidenav {padding-top: 15px;}
+		.sidenav a {font-size: 18px;}
+		}
+		#crossTenantPart {
+			margin-left: 15%;
+		}
+	</style>
+	<body>
+		<div class="header"></div>
+		<!-- <img type="image/png" src="/public/logo_objenious.png"/> -->
+		<div class="sidenav">
+			<a>Cross Tenant</a>
+		</div>
+	</br></br></br>
+	<div id="crossTenantPart">
+		<button id="callGo" type="submit">Connexion à l'API V2</button>
+		<select id="tenantList" onchange="tenantListSelect(this.options[selectedIndex].value, this.options[selectedIndex].text)"></select>
+		<input type="file" id="csv-file" name="files"/>
+		<p id="choosenTenant"></h1>
+		<table id="tenantDevice">
+			<thead>
+				<tr style="visibility: hidden;">
+					<th>Id</th>
+					<th>Name</th>
+				</tr>
+			</thead>
+		</table>
+		<table id="changedWithCSV">
+			<thead>
+				<tr style="visibility: hidden;">
+					<th>Id</th>
+					<th>Name</th>
+				</tr>
+			</thead>
+		</table>
+		<table id="CSVfileContent">
+			<thead>
+				<tr style="visibility: hidden;">
+					<th>Id</th>
+					<th>Name</th>
+				</tr>
+			</thead>
+		</table>
+		<p id="existElt"></p>
+	</div>
+	</body>
+</html>
