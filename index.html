@@ -101,21 +101,26 @@
 					csvFile.forEach(function(elt2) {
 						if(elt.id === elt2.id) {
 							$('#existElt').append("L'ID suivant existe dans les deux listes : " + elt.id + "</br>");
-							var sendingElt = {
-								"label": elt2.name
+							var sendingElt ={
+								"label": elt2.name,
+								"group_id": elt.group.id,
+								"profile_id": elt.profile.id,
+								"properties": {
+									"external_id": elt.properties.external_id
+								}
 							}
 							console.log('sending element : ', sendingElt);
 							$.ajax({
-							url: "https://api-preprod.objenious.com/v2/devices/" + elt.id,
-							method: "PUT",
-							headers: {
-								"x-token": token
-							},
-							data: sendingElt,
-							success: function (response) {
-								console.log("Reponse : ", response);
-							}
-						})
+								url: "https://api-preprod.objenious.com/v2/devices/" + elt.id,
+								method: "PUT",
+								headers: {
+									"x-token": token,
+								},
+								data: JSON.stringify(sendingElt),
+								success: function (response) {
+									console.log("Reponse : ", response);
+								}
+							})
 						}
 					})
 				})
