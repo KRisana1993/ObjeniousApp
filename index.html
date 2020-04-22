@@ -105,37 +105,51 @@
 				$("#csv-file").change(handleFileSelect);
 			});
 			function changeNameWithCSV() {
+				var identique = 0;
 				deviceList.forEach(function(elt) {
 					csvFile.forEach(function(elt2) {
 						if(elt.id === elt2.id) {
-							$('#existElt').append("L'ID suivant existe dans les deux listes : " + elt.id + "</br>");
-							var sendingElt ={
-								"name": elt2.name,
-								"group_id": elt.group.id,
-								"profile_id": elt.profile.id,
-								"properties": {
-									"external_id": elt.properties.external_id
-								}
-							}
-							console.log('sending element : ', sendingElt);
-							$.ajax({
-								url: "https://api-preprod.objenious.com/v2/devices/" + elt.id,
-								method: "PUT",
-								headers: {
-									"x-token": token,
-								},
-								data: JSON.stringify(sendingElt),
-								success: function (response) {
-									var modal = $('#myModal');
-									modal[0].style.visibility = "visible";
-									$('#successBtn').on('click', function () {
-										modal[0].style.visibility = "hidden";
-									})
-								}
-							})
+							identique = identique + 1;
+							console.log('identique ::::: ', identique);
+						} else {
+							identique = identique - 1;
+							/* alert("Aucun ID ne correspond !"); */
 						}
 					})
 				})
+				if (identique < 0) {
+					var modal = $('#myModalError');
+					modal[0].style.visibility = "visible";
+					$('#errorBtn').on('click', function () {
+						modal[0].style.visibility = "hidden";
+					})
+				} else {
+					var modal = $('#myModal');
+					modal[0].style.visibility = "visible";
+					$('#successBtn').on('click', function () {
+						modal[0].style.visibility = "hidden";
+					})
+					/* $('#existElt').append("L'ID suivant existe dans les deux listes : " + elt.id + "</br>");
+						var sendingElt ={
+							"name": elt2.name,
+							"group_id": elt.group.id,
+							"profile_id": elt.profile.id,
+							"properties": {
+								"external_id": elt.properties.external_id
+							}
+						}
+						console.log('sending element : ', sendingElt);
+						$.ajax({
+							url: "https://api-preprod.objenious.com/v2/devices/" + elt.id,
+							method: "PUT",
+							headers: {
+								"x-token": token,
+							},
+							data: JSON.stringify(sendingElt),
+						}) */
+				}
+				console.log('taille du device list : ', deviceList.length)
+				console.log('IDENTIQUE = ', identique);
 			}
 		</script>
 	</head>
@@ -144,6 +158,8 @@
 			overflow-x: hidden;
 			overflow-y: hidden;
 		}
+
+		/* success modal */
 		#myModal {
 			font-weight: bold;
 			padding: 9px 25px;
@@ -230,7 +246,96 @@
 			display: inline-block;
 			margin: 100px auto;
 		}
+		 
+		/* Error modal */
+		#myModalError {
+			font-weight: bold;
+			padding: 9px 25px;
+			background-color: #8080809e;
+			position: absolute;
+			top: 7.5%;
+			left: 12.5%;
+			z-index: 1;
+			width: 100%;
+			height: 100%;
+		}
+		.modal-confirm-error {		
+			color: #636363;
+			width: 325px;
+		}
+		.modal-confirm-error .modal-content-error {
+			padding: 20px;
+			border-radius: 5px;
+			border: none;
+		}
+		.modal-confirm-error .modal-header-error {
+			border-bottom: none;   
+			position: relative;
+		}
+		.modal-confirm-error h4 {
+			text-align: center;
+			font-size: 26px;
+			margin: 30px 0 -15px;
+		}
+		.modal-confirm-error .form-control, .modal-confirm-error .btn-error {
+			min-height: 40px;
+			border-radius: 3px; 
+		}
+		.modal-confirm-error .close {
+			position: absolute;
+			top: -5px;
+			right: -5px;
+		}	
+		.modal-confirm-error .modal-footer-error {
+			border: none;
+			text-align: center;
+			border-radius: 5px;
+			font-size: 13px;
+		}	
+		.modal-confirm-error .icon-box-error {
+			color: #fff;		
+			position: absolute;
+			margin: 0 auto;
+			left: 0;
+			right: 0;
+			top: -70px;
+			width: 95px;
+			height: 95px;
+			border-radius: 50%;
+			z-index: 9;
+			background: red;
+			padding: 15px;
+			text-align: center;
+			box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+		}
+		.modal-confirm-error .icon-box-error i {
+			font-size: 58px;
+			position: relative;
+			top: 3px;
+		}
+		.modal-confirm-error .modal-dialog-error {
+			margin-top: 15%;
+    		margin-left: 30%;
+		}
+		.modal-confirm-error .btn-error {
+			color: #fff;
+			border-radius: 4px;
+			background: red;
+			text-decoration: none;
+			transition: all 0.4s;
+			line-height: normal;
+			border: none;
+		}
+		.modal-confirm-error .btn-error:hover, .modal-confirm-error .btn-error:focus {
+			background: red;
+			outline: none;
+		}
+		.trigger-btn {
+			display: inline-block;
+			margin: 100px auto;
+		}
 
+		
 	/* Style the header with a grey background and some padding */
 		.header {
 			overflow: hidden;
@@ -295,7 +400,25 @@
 						<p class="text-center">Vos modifications ont bien été prise en compte</p>
 					</div>
 					<div class="modal-footer">
-						<button id="successBtn" class="btn btn-success btn-block" data-dismiss="modal">OK</button>
+						<button id="successBtn" class="btn-error btn-success btn-block" data-dismiss="modal">OK</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="myModalError" style="visibility: hidden;">
+			<div class="modal-dialog-error modal-confirm-error">
+				<div class="modal-content-error">
+					<div class="modal-header-error">
+						<div class="icon-box-error">
+							<i class="material-icons-error">&#xE876;</i>
+						</div>				
+						<h4 class="modal-title-error">Erreur !</h4>	
+					</div>
+					<div class="modal-body-error">
+						<p class="text-center-error">Aucun ID ne correspond avec votre fichier CSV !</p>
+					</div>
+					<div class="modal-footer-error">
+						<button id="errorBtn" class="btn btn-error btn-block" data-dismiss="modal">OK</button>
 					</div>
 				</div>
 			</div>
