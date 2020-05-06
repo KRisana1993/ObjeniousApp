@@ -91,9 +91,7 @@
 								})
 								tenantDevices.forEach(function (elt2) {
 									table.append("<tr id='" + elt2.id + "'><td>" + elt2.id + "</td><td>" + elt2.name + "</td><td>" + elt2.description + "</td></tr>");
-									console.log('UNIQUE', unique)
 									unique.forEach(function (key) {
-										console.log('key', key, elt2.properties[key]);
 										var row = document.getElementById(elt2.id);
 										var x = row.insertCell(-1);
 										x.innerHTML= "<td>" + elt2.properties[key] + "</td>";
@@ -114,11 +112,32 @@
 						csvFile = data.data;
 						changeNameWithCSV();
 						var table = $('#CSVfileContent');
-								table.find("thead tr")[0].style.visibility = "visible";
-								table.find("tbody tr").remove();
-								csvFile.forEach(function (elt) {
-									table.append("<tr><td>" + elt.id + "</td><td>" + elt.name + "</td></tr>");
-								});
+						table.find("thead tr")[0].style.visibility = "visible";
+						table.find("tbody tr").remove();
+						var header = table.find("thead tr#tableCSVHeader")
+						
+						var propertiesKeys = [];
+						csvFile.forEach(function (elt) {
+							Object.keys(elt).forEach(function (head) {
+								propertiesKeys.push(head);
+							})
+						});
+						var unique = propertiesKeys.filter(function(elem, index, self) {
+							return index === self.indexOf(elem);
+						})
+
+						unique.forEach(function (key) {
+							header.append("<th>" + key + "</th>")
+						})
+
+						csvFile.forEach(function (elt2) {
+							table.append("<tr id='csv" + elt2.id + "'></tr>");
+							unique.forEach(function (key) {
+								var row = document.getElementById('csv' + elt2.id);
+								var x = row.insertCell(-1);
+								x.innerHTML= "<td>" + elt2[key] + "</td>";
+							})
+						})
 					}
 				});
 		    }
@@ -335,11 +354,10 @@
 					<tr id="tableHeader" style="visibility: hidden;"></tr>
 				</thead>
 			</table>
+			</br>
 			<table id="CSVfileContent">
 				<thead>
-					<tr style="visibility: hidden;">
-						<th>Id</th>
-						<th>Name</th>
+					<tr id="tableCSVHeader" style="visibility: hidden;">
 					</tr>
 				</thead>
 			</table>
