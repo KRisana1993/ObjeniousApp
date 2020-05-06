@@ -80,17 +80,24 @@
 								var propertiesKeys = [];
 								tenantDevices.forEach(function (elt) {
 									Object.keys(elt.properties).forEach(function (head) {
-										propertiesKeys.push(head);	
+										propertiesKeys.push(head);
 									})
-									/* table.append("<tr><td>" + elt.id + "</td><td>" + elt.name + "</td></tr>"); */
 								});
 								var unique = propertiesKeys.filter(function(elem, index, self) {
 									return index === self.indexOf(elem);
 								})
 								unique.forEach(function(tablehead) {
-									if(tablehead !== "external_id") {
-										header.append("<th>" + tablehead + "</th>")
-									}
+									header.append("<th>" + tablehead + "</th>")
+								})
+								tenantDevices.forEach(function (elt2) {
+									table.append("<tr id='" + elt2.id + "'><td>" + elt2.id + "</td><td>" + elt2.name + "</td><td>" + elt2.description + "</td></tr>");
+									console.log('UNIQUE', unique)
+									unique.forEach(function (key) {
+										console.log('key', key, elt2.properties[key]);
+										var row = document.getElementById(elt2.id);
+										var x = row.insertCell(-1);
+										x.innerHTML= "<td>" + elt2.properties[key] + "</td>";
+									})
 								})
 							}
 						})
@@ -118,9 +125,7 @@
 			$(document).ready(function(){
 				$("#csv-file").change(handleFileSelect);
 			});
-			function changeNameWithCSV() {
-				console.log('::::', deviceList, csvFile);
-			
+			function changeNameWithCSV() {			
 				/* $('#existElt').append("L'ID suivant existe dans les deux listes : " + elt.id + "</br>");
 					var sendingElt ={
 						"name": elt2.name,
@@ -154,7 +159,7 @@
  			 border: 1px solid black;
 		}
 
-		th {
+		th, td {
 			text-align: center;
 			height: 30px;
 		}
