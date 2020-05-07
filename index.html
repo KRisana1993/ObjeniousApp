@@ -110,7 +110,7 @@
 					complete: function(results) {
 						data = results;
 						csvFile = data.data;
-						changeNameWithCSV();
+						createSendingElement();
 						var table = $('#CSVfileContent');
 						table.find("thead tr")[0].style.visibility = "visible";
 						table.find("tbody tr").remove();
@@ -144,11 +144,12 @@
 					}
 				});
 		    }
+			var eltIdentique = [];
+			var tab = []
 			$(document).ready(function(){
 				$("#csv-file").change(handleFileSelect);
 			});
-			function changeNameWithCSV() {
-				var eltIdentique = [];
+			function createSendingElement() {
 
 				csvFile.forEach(function (elt) {
 					deviceList.forEach(function (elt2) {
@@ -165,7 +166,6 @@
 							var result = deviceList.find(obj => {
 								return obj.id === ids
 							})
-
 							var sendingObject = {
 								"group_id" : result.group.id,
 								'profile_id' : result.profile.id,
@@ -173,20 +173,17 @@
 							};
 							if ((keyExist = "name" in csv) === true) {
 								sendingObject.name = csv.name;
-								delete csv.name;
 							}
 							if ((keyExist = "description" in csv) === true) {
 								sendingObject.description = csv.description;
-								delete csv.description;
 							}
 							if ((keyExist = "status" in csv) === true) {
 								sendingObject.status = csv.status;
-								delete csv.status;
 							}
-							delete csv.id;
 							
 							sendingObject.properties = csv;
 							sendingObject.properties.external_id = result.properties.external_id
+							tab.push(sendingObject);
 						}
 					})
 				})
@@ -210,6 +207,18 @@
 					}) */
 				// console.log('taille du device list : ', deviceList.length)
 				// console.log('IDENTIQUE = ', identique);
+
+				updateFunction ();
+			}
+
+			function updateFunction () {
+				/* tab.forEach(function(elt) {
+					delete elt.properties.name
+					delete elt.properties.id
+					delete elt.properties.description
+					delete elt.properties.status
+				}) */
+				console.log('UPDATE', tab, eltIdentique);
 			}
 		</script>
 	</head>
