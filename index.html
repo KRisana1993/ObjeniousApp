@@ -125,6 +125,9 @@
 						var unique = propertiesKeys.filter(function(elem, index, self) {
 							return index === self.indexOf(elem);
 						})
+						
+						var p = $('#csvFileContent');
+						p[0].style.visibility = "visible";
 
 						unique.forEach(function (key) {
 							header.append("<th>" + key + "</th>")
@@ -144,7 +147,49 @@
 			$(document).ready(function(){
 				$("#csv-file").change(handleFileSelect);
 			});
-			function changeNameWithCSV() {			
+			function changeNameWithCSV() {
+				var eltIdentique = [];
+
+				csvFile.forEach(function (elt) {
+					deviceList.forEach(function (elt2) {
+						if(elt.id === elt2.id) {
+							eltIdentique.push(elt.id);
+							console.log('EXISTE');
+						}
+					})
+				})
+			
+				eltIdentique.forEach(function (ids) {
+					csvFile.forEach(function (csv, key) {
+						if(ids === csv['id']) {
+							var result = deviceList.find(obj => {
+								return obj.id === ids
+							})
+
+							var sendingObject = {
+								"group_id" : result.group.id,
+								'profile_id' : result.profile.id,
+								"properties" : {
+									"external_id" : result.properties.external_id
+								}
+							};
+
+							// console.log('resultat: ', result);
+							// console.log('CSV', csv);
+
+							if ((keyExist = "name" in csv) === true) {
+								console.log('LAAA')
+								sendingObject.name = csv.name;
+							}
+							if ((keyExist = "description" in csv) === true) {
+								console.log('LAAA')
+								sendingObject.description = csv.description;
+							}
+							
+							console.log('-----', sendingObject, csv[key]);
+						}
+					})
+				})
 				/* $('#existElt').append("L'ID suivant existe dans les deux listes : " + elt.id + "</br>");
 					var sendingElt ={
 						"name": elt2.name,
@@ -348,13 +393,15 @@
 			<button id="callGo" type="submit">Connexion à l'API V2</button>
 			<select id="tenantList" onchange="tenantListSelect(this.options[selectedIndex].value, this.options[selectedIndex].text)"></select>
 			<input type="file" id="csv-file" name="files"/>
-			<p id="choosenTenant"></h1>
+			</br></br>
+			<p style="font-weight: bold;" id="choosenTenant"></p>
 			<table id="tenantDevice">
 				<thead>
 					<tr id="tableHeader" style="visibility: hidden;"></tr>
 				</thead>
 			</table>
 			</br>
+			<p style="font-weight: bold; visibility: hidden;" id="csvFileContent">Contenu du fichier CSV</p>
 			<table id="CSVfileContent">
 				<thead>
 					<tr id="tableCSVHeader" style="visibility: hidden;">
