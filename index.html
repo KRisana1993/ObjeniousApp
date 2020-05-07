@@ -160,7 +160,7 @@
 				})
 			
 				eltIdentique.forEach(function (ids) {
-					csvFile.forEach(function (csv, key) {
+					csvFile.forEach(function (csv) {
 						if(ids === csv['id']) {
 							var result = deviceList.find(obj => {
 								return obj.id === ids
@@ -169,24 +169,24 @@
 							var sendingObject = {
 								"group_id" : result.group.id,
 								'profile_id' : result.profile.id,
-								"properties" : {
-									"external_id" : result.properties.external_id
-								}
+								"properties" : {}
 							};
-
-							// console.log('resultat: ', result);
-							// console.log('CSV', csv);
-
 							if ((keyExist = "name" in csv) === true) {
-								console.log('LAAA')
 								sendingObject.name = csv.name;
+								delete csv.name;
 							}
 							if ((keyExist = "description" in csv) === true) {
-								console.log('LAAA')
 								sendingObject.description = csv.description;
+								delete csv.description;
 							}
+							if ((keyExist = "status" in csv) === true) {
+								sendingObject.status = csv.status;
+								delete csv.status;
+							}
+							delete csv.id;
 							
-							console.log('-----', sendingObject, csv[key]);
+							sendingObject.properties = csv;
+							sendingObject.properties.external_id = result.properties.external_id
 						}
 					})
 				})
