@@ -64,7 +64,6 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
 	mux.HandleFunc("/", indexHandler)
 	http.ListenAndServe(":"+port, mux)
 }
