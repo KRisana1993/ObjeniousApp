@@ -1,6 +1,6 @@
 table {
-width: 100%;
-border-collapse: collapse;
+    width: 97%;
+    border-collapse: collapse;
 }
 
 table, th, td {
@@ -16,6 +16,12 @@ body {
     overflow-y: auto;
 }
 
+#CSVTable, #tenantTable {
+    width: 97%;
+    height: 300px;
+    overflow-y: auto;
+    display: block;
+}
 /* success modal */
 #myModal {
     font-weight: bold;
@@ -27,6 +33,7 @@ body {
     z-index: 1;
     width: 100%;
     height: 100%;
+    margin-top: 13%;
 }
 .modal-confirm {		
     color: #636363;

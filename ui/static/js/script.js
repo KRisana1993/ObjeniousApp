@@ -60,8 +60,8 @@ function tenantListSelect (index, choosenTenant) {
                     var header = table.find("thead tr#tableHeader")
                     header.append("<th>ID</th><th>Name</th><th>Description</th>")
                     var propertiesKeys = [];
-                    tenantDevices.forEach(function (elt) {
-                        Object.keys(elt.properties).forEach(function (head) {
+                    tenantDevices.forEach(function (elt1) {
+                        Object.keys(elt1.properties).forEach(function (head) {
                             propertiesKeys.push(head);
                         })
                     });
@@ -99,8 +99,8 @@ function handleFileSelect(evt) {
             var header = table.find("thead tr#tableCSVHeader")
             
             var propertiesKeys = [];
-            csvFile.forEach(function (elt) {
-                Object.keys(elt).forEach(function (head) {
+            csvFile.forEach(function (elt3) {
+                Object.keys(elt3).forEach(function (head) {
                     propertiesKeys.push(head);
                 })
             });
@@ -115,12 +115,12 @@ function handleFileSelect(evt) {
                 header.append("<th>" + key + "</th>")
             })
 
-            csvFile.forEach(function (elt2) {
-                table.append("<tr id='csv" + elt2.id + "'></tr>");
+            csvFile.forEach(function (elt4) {
+                table.append("<tr id='csv" + elt4.id + "'></tr>");
                 unique.forEach(function (key) {
-                    var row = document.getElementById('csv' + elt2.id);
+                    var row = document.getElementById('csv' + elt4.id);
                     var x = row.insertCell(-1);
-                    x.innerHTML= "<td>" + elt2[key] + "</td>";
+                    x.innerHTML= "<td>" + elt4[key] + "</td>";
                 })
             })
         }
@@ -133,11 +133,10 @@ $(document).ready(function(){
 });
 function createSendingElement() {
 
-    csvFile.forEach(function (elt) {
-        deviceList.forEach(function (elt2) {
-            if(elt.id === elt2.id) {
-                eltIdentique.push(elt.id);
-                console.log('EXISTE');
+    csvFile.forEach(function (elt5) {
+        deviceList.forEach(function (elt6) {
+            if(elt5.id === elt6.id) {
+                eltIdentique.push(elt5.id);
             }
         })
     })
@@ -162,8 +161,12 @@ function createSendingElement() {
                 if ((keyExist = "status" in csv) === true) {
                     sendingObject.status = csv.status;
                 }
-                
-                sendingObject.properties = csv;
+
+                for (let property in csv) {
+                    if (property !== 'name' && property !== 'description' && property !== 'status' && property !== 'id') {
+                        sendingObject.properties[property] = csv[property]
+                    }
+                }
                 sendingObject.properties.external_id = result.properties.external_id
                 tab.push(sendingObject);
             }
@@ -194,11 +197,13 @@ function createSendingElement() {
 }
 
 function updateFunction () {
-    /* tab.forEach(function(elt) {
-        delete elt.properties.name
-        delete elt.properties.id
-        delete elt.properties.description
-        delete elt.properties.status
-    }) */
-    console.log('UPDATE', tab, eltIdentique);
+    console.log('UPDTE', tab, eltIdentique);
+    $("#updateBtn")[0].style.visibility = "visible";
 }
+
+$(document).ready(function(){
+    $("#updateBtn").on('click', function () {
+        $('#myModal')[0].style.visibility = "visible";
+        $("body").css("overflow", "hidden");
+    })
+});

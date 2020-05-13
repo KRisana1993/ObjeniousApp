@@ -19,7 +19,7 @@
 		<script src="/static/js/script.js"></script>
 	</head>
  
-	<body>
+	<body id="body">
 		<div class="header"></div>
 		<div class="sidenav">
 			<a>Cross Tenant</a>
@@ -32,7 +32,7 @@
 						<div class="icon-box">
 							<i class="material-icons">&#xE876;</i>
 						</div>				
-						<h4 class="modal-title">Succès !</h4>	
+						<h4 class="modal-title">Etes-vous sur de vouloir modifier ?</h4>	
 					</div>
 					<div class="modal-body">
 						<p class="text-center">Vos modifications ont bien été prise en compte</p>
@@ -49,20 +49,23 @@
 			<input type="file" id="csv-file" name="files"/>
 			</br></br>
 			<p style="font-weight: bold;" id="choosenTenant"></p>
-			<table id="tenantDevice">
-				<thead>
-					<tr id="tableHeader" style="visibility: hidden;"></tr>
-				</thead>
-			</table>
-			</br>
+			<div id="tenantTable">
+				<table id="tenantDevice">
+					<thead>
+						<tr id="tableHeader" style="visibility: hidden;"></tr>
+					</thead>
+				</table>
+			</div>
 			<p style="font-weight: bold; visibility: hidden;" id="csvFileContent">Contenu du fichier CSV</p>
-			<table id="CSVfileContent">
-				<thead>
-					<tr id="tableCSVHeader" style="visibility: hidden;">
-					</tr>
-				</thead>
-			</table>
-			<p id="existElt"></p>
+			<div id="CSVTable">
+				<table id="CSVfileContent">
+					<thead>
+						<tr id="tableCSVHeader" style="visibility: hidden;">
+						</tr>
+					</thead>
+				</table>
+			</div>
+			<button id="updateBtn" style="visibility: hidden;">Modifier</button>
 		</div>
 	</body>
 </html>
