@@ -62,8 +62,14 @@ func main() {
 	}
 	fmt.Print(string(bodyTenant)) */
 
+	fileServer := http.FileServer(http.Dir("./ui/static/"))
+
 	mux := http.NewServeMux()
 
+	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 	mux.HandleFunc("/", indexHandler)
+
 	http.ListenAndServe(":"+port, mux)
+
+	// mux.HandleFunc("/", indexHandler)
 }
