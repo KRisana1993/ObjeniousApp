@@ -136,7 +136,7 @@ function createSendingElement() {
     csvFile.forEach(function (elt5) {
         deviceList.forEach(function (elt6) {
             if(elt5.id === elt6.id) {
-                eltIdentique.push(elt5.id);
+                eltIdentique.push('ID : ' + elt5.id + ', Name : ' + elt5.name);
             }
         })
     })
@@ -197,8 +197,12 @@ function createSendingElement() {
 }
 
 function updateFunction () {
-    console.log('UPDTE', tab, eltIdentique);
     $("#updateBtn")[0].style.visibility = "visible";
+    var ul=$("<ul>");
+    eltIdentique.forEach(function(data){
+        ul.append($("<li>").text(data));
+    });
+    $('#modifyingDevice').append(ul);
 }
 
 $(document).ready(function(){

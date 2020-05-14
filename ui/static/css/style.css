@@ -43,6 +43,8 @@ body {
     padding: 20px;
     border-radius: 5px;
     border: none;
+    padding-right: 0%;
+    width: 150%;
 }
 .modal-confirm .modal-header {
     border-bottom: none;   
@@ -91,7 +93,7 @@ body {
 }
 .modal-confirm.modal-dialog {
     margin-top: 15%;
-    margin-left: 30%;
+    margin-left: 24%;
 }
 .modal-confirm .btn {
     color: #fff;
